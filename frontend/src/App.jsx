@@ -9,6 +9,7 @@ import { AuthProvider } from "@/contexts/AuthContext.tsx";
 import { setupDemoUser } from "@/utils/demoSetup.ts";
 import Index from "./pages/Index.tsx";
 import Analysis from "./pages/Analysis.tsx";
+import AnalysisResults from "./pages/AnalysisResults.tsx";
 import Login from "./pages/Login.tsx";
 import Signup from "./pages/Signup.tsx";
 import Profile from "./pages/Profile.tsx";
@@ -30,6 +31,7 @@ const App = () => (
           <Routes>
             <Route path="/" element={<Index />} />
             <Route path="/analysis" element={<Analysis />} />
+            <Route path="/analysis/results" element={<AnalysisResults />} />
             <Route path="/login" element={<Login />} />
             <Route path="/signup" element={<Signup />} />
             <Route path="/profile" element={<Profile />} />

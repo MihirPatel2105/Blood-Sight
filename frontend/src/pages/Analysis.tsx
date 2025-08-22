@@ -57,8 +57,15 @@ const Analysis = () => {
   };
 
   const handleSubmit = () => {
-    // Simulate form submission
-    alert("Form submitted! This is a demo version without backend processing.");
+    // Navigate to results page with form data
+    const analysisData = {
+      fileName: selectedFile?.name || "blood-report.pdf",
+      patientInfo: formData
+    };
+    
+    navigate("/analysis/results", { 
+      state: { analysisData } 
+    });
   };
 
   return (
