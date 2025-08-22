@@ -45,61 +45,87 @@ const AnalysisResults = () => {
     
     // Simulate processing time
     setTimeout(() => {
-      setResults({
-        fileName: analysisData?.fileName || "BloodReport-Demo.pdf",
-        uploadedAt: new Date().toLocaleString(),
-        patientInfo: analysisData?.patientInfo || {
-          name: "John Doe",
-          email: "john.doe@example.com",
-          medicalHistory: "No significant medical history"
-        },
-        extractedText: "Sample extracted text from blood report...",
-        bloodValues: [
-          {
-            name: "Hemoglobin",
-            value: "13.2",
-            unit: "g/dL",
-            normalRange: "12.0-15.5",
-            status: "normal" as const
+      if (analysisData && analysisData.analysis) {
+        // Use real data from backend
+        setResults({
+          fileName: analysisData.fileName || "BloodReport-Demo.pdf",
+          uploadedAt: new Date().toLocaleString(),
+          patientInfo: analysisData.patientInfo || {
+            name: "John Doe",
+            email: "john.doe@example.com",
+            medicalHistory: "No significant medical history"
           },
-          {
-            name: "White Blood Cells",
-            value: "11.2",
-            unit: "x10³/μL",
-            normalRange: "4.5-11.0",
-            status: "high" as const
-          },
-          {
-            name: "Platelets",
-            value: "280",
-            unit: "x10³/μL",
-            normalRange: "150-450",
-            status: "normal" as const
+          extractedText: analysisData.extractedText || "No text extracted",
+          bloodValues: analysisData.analysis.bloodValues || [],
+          analysis: {
+            overallHealth: analysisData.analysis.overallHealth || "Analysis pending",
+            keyFindings: analysisData.analysis.keyFindings || ["No findings available"],
+            recommendations: analysisData.analysis.recommendations || ["Please consult your doctor"],
+            riskLevel: analysisData.analysis.riskLevel || "Low",
+            conditions: [],
+            abnormalValues: analysisData.analysis.keyFindings?.filter(finding => 
+              finding.includes('high') || finding.includes('low')
+            ) || []
           }
-        ],
-        analysis: {
-          overallHealth: "Generally Normal",
-          keyFindings: [
-            "Hemoglobin levels within normal range (13.2 g/dL)",
-            "White blood cell count slightly elevated (11,200/μL)",
-            "Platelet count normal (280,000/μL)",
-            "Blood glucose levels normal (95 mg/dL)"
+        });
+      } else {
+        // Use demo data when no real data available
+        setResults({
+          fileName: "BloodReport-Demo.pdf",
+          uploadedAt: new Date().toLocaleString(),
+          patientInfo: {
+            name: "John Doe",
+            email: "john.doe@example.com",
+            medicalHistory: "No significant medical history"
+          },
+          extractedText: "Sample extracted text from blood report...",
+          bloodValues: [
+            {
+              name: "Hemoglobin",
+              value: "13.2",
+              unit: "g/dL",
+              normalRange: "12.0-15.5",
+              status: "normal" as const
+            },
+            {
+              name: "White Blood Cells",
+              value: "11.2",
+              unit: "x10³/μL",
+              normalRange: "4.5-11.0",
+              status: "high" as const
+            },
+            {
+              name: "Platelets",
+              value: "280",
+              unit: "x10³/μL",
+              normalRange: "150-450",
+              status: "normal" as const
+            }
           ],
-          recommendations: [
-            "Monitor white blood cell count in 2-4 weeks",
-            "Maintain current diet and exercise routine",
-            "Consider consultation with hematologist if WBC remains elevated",
-            "Regular follow-up in 3 months"
-          ],
-          riskLevel: "Low",
-          conditions: [
-            "Slightly elevated white blood cell count"
-          ],
-          abnormalValues: [
-            "White Blood Cells: 11.2 x10³/μL (Normal: 4.5-11.0)"
-          ]
-        }
-      });
+          analysis: {
+            overallHealth: "Generally Normal",
+            keyFindings: [
+              "Hemoglobin levels within normal range (13.2 g/dL)",
+              "White blood cell count slightly elevated (11,200/μL)",
+              "Platelet count normal (280,000/μL)",
+              "Blood glucose levels normal (95 mg/dL)"
+            ],
+            recommendations: [
+              "Monitor white blood cell count in 2-4 weeks",
+              "Maintain current diet and exercise routine",
+              "Consider consultation with hematologist if WBC remains elevated",
+              "Regular follow-up in 3 months"
+            ],
+            riskLevel: "Low",
+            conditions: [
+              "Slightly elevated white blood cell count"
+            ],
+            abnormalValues: [
+              "White Blood Cells: 11.2 x10³/μL (Normal: 4.5-11.0)"
+            ]
+          }
+        });
+      }
       setLoading(false);
     }, 2000);
   }, [location.state, navigate]);

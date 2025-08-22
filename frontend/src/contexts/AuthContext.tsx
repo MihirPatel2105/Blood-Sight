@@ -99,31 +99,31 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     try {
       setLoading(true);
 
-      // Get all users from localStorage
-      const usersData = localStorage.getItem("bloodai_users");
-      const users: User[] = usersData ? JSON.parse(usersData) : [];
+      const response = await fetch('http://localhost:5001/login', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ email, password }),
+      });
 
-      // Find user by email
-      const existingUser = users.find(
-        (u) => u.email.toLowerCase() === email.toLowerCase(),
-      );
+      const data = await response.json();
 
-      if (!existingUser) {
-        return false; // User not found
+      if (data.success) {
+        setUser({
+          id: data.user.id.toString(),
+          email: data.user.email,
+          name: data.user.name,
+          phone: data.user.phone,
+          dateOfBirth: data.user.date_of_birth,
+          gender: data.user.gender,
+          createdAt: data.user.created_at
+        });
+        return true;
+      } else {
+        console.error('Login failed:', data.error);
+        return false;
       }
-
-      // Get stored password
-      const passwordsData = localStorage.getItem("bloodai_passwords");
-      const passwords: Record<string, string> = passwordsData
-        ? JSON.parse(passwordsData)
-        : {};
-
-      if (passwords[existingUser.id] !== password) {
-        return false; // Invalid password
-      }
-
-      setUser(existingUser);
-      return true;
     } catch (error) {
       console.error("Login error:", error);
       return false;
@@ -136,43 +136,31 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     try {
       setLoading(true);
 
-      // Get existing users
-      const usersData = localStorage.getItem("bloodai_users");
-      const users: User[] = usersData ? JSON.parse(usersData) : [];
+      const response = await fetch('http://localhost:5001/signup', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(userData),
+      });
 
-      // Check if user already exists
-      const existingUser = users.find(
-        (u) => u.email.toLowerCase() === userData.email.toLowerCase(),
-      );
-      if (existingUser) {
-        return false; // User already exists
+      const data = await response.json();
+
+      if (data.success) {
+        setUser({
+          id: data.user.id.toString(),
+          email: data.user.email,
+          name: data.user.name,
+          phone: data.user.phone,
+          dateOfBirth: data.user.date_of_birth,
+          gender: data.user.gender,
+          createdAt: data.user.created_at
+        });
+        return true;
+      } else {
+        console.error('Signup failed:', data.error);
+        return false;
       }
-
-      // Create new user
-      const newUser: User = {
-        id: generateUserId(),
-        email: userData.email,
-        name: userData.name,
-        phone: userData.phone,
-        dateOfBirth: userData.dateOfBirth,
-        gender: userData.gender,
-        createdAt: new Date().toISOString(),
-      };
-
-      // Save user
-      users.push(newUser);
-      localStorage.setItem("bloodai_users", JSON.stringify(users));
-
-      // Save password separately for security
-      const passwordsData = localStorage.getItem("bloodai_passwords");
-      const passwords: Record<string, string> = passwordsData
-        ? JSON.parse(passwordsData)
-        : {};
-      passwords[newUser.id] = userData.password;
-      localStorage.setItem("bloodai_passwords", JSON.stringify(passwords));
-
-      setUser(newUser);
-      return true;
     } catch (error) {
       console.error("Signup error:", error);
       return false;
@@ -186,17 +174,6 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       if (!user) return false;
 
       const updatedUser = { ...user, ...userData };
-
-      // Update in users array
-      const usersData = localStorage.getItem("bloodai_users");
-      const users: User[] = usersData ? JSON.parse(usersData) : [];
-
-      const userIndex = users.findIndex((u) => u.id === user.id);
-      if (userIndex !== -1) {
-        users[userIndex] = updatedUser;
-        localStorage.setItem("bloodai_users", JSON.stringify(users));
-      }
-
       setUser(updatedUser);
       return true;
     } catch (error) {

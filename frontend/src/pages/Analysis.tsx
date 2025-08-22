@@ -44,6 +44,7 @@ const Analysis = () => {
     symptoms: "",
   });
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
+  const [isUploading, setIsUploading] = useState(false);
 
   const handleInputChange = (field: string, value: string) => {
     setFormData(prev => ({ ...prev, [field]: value }));
@@ -56,16 +57,46 @@ const Analysis = () => {
     }
   };
 
-  const handleSubmit = () => {
-    // Navigate to results page with form data
-    const analysisData = {
-      fileName: selectedFile?.name || "blood-report.pdf",
-      patientInfo: formData
-    };
+  const handleSubmit = async () => {
+    if (!selectedFile) {
+      alert("Please upload a file first");
+      return;
+    }
+
+    setIsUploading(true);
     
-    navigate("/analysis/results", { 
-      state: { analysisData } 
-    });
+    try {
+      const formDataToSend = new FormData();
+      formDataToSend.append('file', selectedFile);
+
+      const response = await fetch('http://localhost:5001/upload', {
+        method: 'POST',
+        body: formDataToSend,
+      });
+
+      const result = await response.json();
+
+      if (result.success) {
+        // Navigate to results page with API response data
+        const analysisData = {
+          fileName: result.filename,
+          patientInfo: formData,
+          extractedText: result.extracted_text,
+          analysis: result.analysis
+        };
+        
+        navigate("/analysis/results", { 
+          state: { analysisData } 
+        });
+      } else {
+        alert(`Error: ${result.error}`);
+      }
+    } catch (error) {
+      console.error('Upload error:', error);
+      alert('Failed to upload file. Please try again.');
+    } finally {
+      setIsUploading(false);
+    }
   };
 
   return (

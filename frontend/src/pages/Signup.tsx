@@ -103,6 +103,19 @@ export default function Signup() {
     });
   };
 
+  // Get today's date in YYYY-MM-DD format for max date constraint
+  const getTodayDate = () => {
+    const today = new Date();
+    return today.toISOString().split('T')[0];
+  };
+
+  // Get minimum date (100 years ago) for reasonable birth date range
+  const getMinDate = () => {
+    const minDate = new Date();
+    minDate.setFullYear(minDate.getFullYear() - 100);
+    return minDate.toISOString().split('T')[0];
+  };
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-background via-secondary/20 to-background">
       {/* Header */}
@@ -199,6 +212,8 @@ export default function Signup() {
                         type="date"
                         value={formData.dateOfBirth}
                         onChange={handleInputChange}
+                        max={getTodayDate()}
+                        min={getMinDate()}
                         className="pl-10"
                         disabled={isLoading || loading}
                       />
